@@ -406,6 +406,8 @@ public class TableActivity extends AppCompatActivity {
 
         updateCardImage(TableActivity.this, dealerHand.get(1), "R.id.dealerCard2");
 
+        updateDealerScore();
+
         // Player Busts
         if (playerScore > 21) {
             updateDealerScore();
