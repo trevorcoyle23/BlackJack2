@@ -226,19 +226,23 @@ public class TableActivity extends AppCompatActivity {
             if (playerScore == 21) {
 
                 // Dealer pays 3x current bet amount
-                Toast.makeText(this, "Player Wins by BlackJack. $ +" + playerBet * 3, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Player Wins by BlackJack, $ +" + playerBet * 3, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet * 3); // sets player's chipCount to 3x the amount of the pot
 
             } else if (dealerScore == 21) {
 
                 // Player Loses current bet amount
-                Toast.makeText(this, "Dealer Wins by BlackJack. $ -" + playerBet, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Dealer Wins by BlackJack, $ -" + playerBet, Toast.LENGTH_SHORT).show();
 
             } else {
                 Toast.makeText(this, "Push, $ +" + playerBet, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet);
             }
         }
+
+        // Update player's chip count
+        TextView playerText = findViewById(R.id.playerText);
+        playerText.setText(player.toString());
     }
 
     /**
@@ -398,6 +402,8 @@ public class TableActivity extends AppCompatActivity {
      */
     public void stand() {
 
+        TextView playerText = findViewById(R.id.playerText);
+
         updateCardImage(TableActivity.this, dealerHand.get(1), "R.id.dealerCard2");
 
         // Player Busts
@@ -408,9 +414,10 @@ public class TableActivity extends AppCompatActivity {
             updateDealerScore();
             Toast.makeText(TableActivity.this, "Player w/ Lucky 21 $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
             player.setChipCount(playerBet * 2);
+            playerText.setText(player.toString());
         } else {
             // Dealer draws until dealerScore <= 17
-            while (dealerScore <= 17) {
+            while (dealerScore < 17) {
                 Card card = deck.remove(deck.size() - 1);
                 dealerHand.add(card);
                 currentDealerCardIndex++; // == 1 -> 2 -> ...
@@ -435,15 +442,18 @@ public class TableActivity extends AppCompatActivity {
             if (dealerScore > 21) {
                 Toast.makeText(TableActivity.this, "Dealer Bust $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet * 2);
+                playerText.setText(player.toString());
             } else {
                 if (dealerScore > playerScore) {
                     Toast.makeText(TableActivity.this, "Dealer wins w/ " + dealerScore + ", $ -" + playerBet, Toast.LENGTH_SHORT).show();
                 } else if (playerScore > dealerScore) {
                     Toast.makeText(TableActivity.this, "Player wins w/ " + playerScore + ", $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
                     player.setChipCount(playerBet * 2);
+                    playerText.setText(player.toString());
                 } else {
                     Toast.makeText(TableActivity.this, "Push, $ +" + playerBet, Toast.LENGTH_SHORT).show();
                     player.setChipCount(playerBet);
+                    playerText.setText(player.toString());
                 }
             }
         }
