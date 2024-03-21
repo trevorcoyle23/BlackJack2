@@ -8,15 +8,32 @@
     android:orientation="vertical"
     tools:context=".TableActivity">
 
-    <TextView
-        android:drawableLeft="@drawable/default_skin_foreground"
-        android:id="@+id/playerText"
-        android:text=""
-        android:gravity="center"
-        android:textSize="24sp"
+    <LinearLayout
+        android:weightSum="4"
+        android:orientation="horizontal"
         android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="0dp">
+
+        <TextView
+            android:drawableLeft="@drawable/default_skin_foreground"
+            android:id="@+id/playerText"
+            android:text=""
+            android:gravity="center"
+            android:textSize="24sp"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:layout_gravity="center"
+            android:text="EXIT"
+            android:id="@+id/exitButton"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="64dp" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_weight="4"
         android:weightSum="3"
@@ -33,31 +50,31 @@
             android:layout_height="0dp">
             <ImageView
                 android:id="@+id/dealerCard1"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/dealerCard2"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/dealerCard3"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/dealerCard4"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/dealerCard5"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
@@ -71,31 +88,31 @@
             android:layout_height="0dp">
             <ImageView
                 android:id="@+id/playerCard1"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/playerCard2"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/playerCard3"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/playerCard4"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <ImageView
                 android:id="@+id/playerCard5"
-                android:src="@drawable/card_back"
+                android:src="@drawable/back_of_card"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
