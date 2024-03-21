@@ -3,6 +3,7 @@ package edu.utsa.cs3443.blackjack2;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import edu.utsa.cs3443.blackjack2.model.Card;
 import edu.utsa.cs3443.blackjack2.model.Player;
 
 public class TableActivity extends AppCompatActivity {
+    private ArrayList<Player> players;
     private Player player;
     private ArrayList<Card> deck;
     private ArrayList<Card> dealerHand;
@@ -32,13 +34,13 @@ public class TableActivity extends AppCompatActivity {
     /**
      * onCreate():
      *  - Finds betButton and adds a Listener for it.
-     *
+
      *  - Creates a new Player object based on the Intent
      *    from MainActivity.java (String name, int chipCount)
      *    and displays it to the screen in playerText TextView.
-     *
+
      *  - If betEditText TextView is NOT empty, we start the game.
-     *
+
      *  @param savedInstanceState - idk what this is but we need it for something :)
      */
     @Override
@@ -46,22 +48,29 @@ public class TableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table);
 
+        // Get ArrayList of Players
+        Intent intent = getIntent();
+        player = new Player(intent.getStringExtra("name"), 0);
+        players = (ArrayList<Player>)intent.getSerializableExtra("players");
+
+        // Find current Player in list
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getName().equals(player.getName())) {
+                player = players.get(i);
+            }
+        }
+
         // Buttons
         Button betButton;
+        Button exitButton;
 
         // TextViews
         TextView currentBetText;
         EditText betEditText;
         TextView playerText;
 
-        String name = getIntent().getStringExtra("name"); // intent "name" for player
-        int chipCount = getIntent().getIntExtra("chipCount", 0); // intent "chipCount" for player
-
         // Player Initializing
         playerText = findViewById(R.id.playerText);
-
-        // Create Player
-        player = new Player(name, chipCount);
 
         // Change TextView to Player representation
         playerText.setText(player.toString());
@@ -70,89 +79,117 @@ public class TableActivity extends AppCompatActivity {
         betEditText = findViewById(R.id.betEditText);
         currentBetText = findViewById(R.id.currentBetText);
 
-        // betButton Listener
-        betButton = findViewById(R.id.betButton);
-        betButton.setOnClickListener(new View.OnClickListener() {
+        exitButton = findViewById(R.id.exitButton);
+        exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (betEditText.getText().toString().equals("")) {
-                        Toast.makeText(TableActivity.this, "Please enter a bet amount to start the game", Toast.LENGTH_SHORT).show();
-                } else {
-                    playerBet = Integer.parseInt(betEditText.getText().toString());
-                    currentBetText.setText("Current Bet: " + playerBet);
-                    player.betChips(playerBet);
-                    playerText.setText(player.toString());
-                    startGame();
-                    betEditText.setText("");
-                }
-
-                // Buttons
-                Button hitButton;
-                Button standButton;
-                Button doubleDownButton;
-                Button splitButton;
-
-                // hitButton Listener
-                hitButton = findViewById(R.id.hitButton);
-                hitButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        hit();
-                    }
-                });
-
-                // standButton Listener
-                standButton = findViewById(R.id.standButton);
-                standButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        stand();
-                    }
-                });
-
-                // doubleDownButton Listener
-                doubleDownButton = findViewById(R.id.doubleDownButton);
-                doubleDownButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // doubleDown
-                    }
-                });
-
-                // check if playerHand is able to split
-                if (playerHand.get(0).getValue() == playerHand.get(1).getValue()) {
-                    // splitButton Listener
-                    splitButton = findViewById(R.id.splitButton);
-                    splitButton.setEnabled(true);
-                    splitButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // split
-                        }
-                    });
-                }
-
+                finish();
             }
         });
+
+        if (player.getChipCount() > 0) {
+            // betButton Listener
+            betButton = findViewById(R.id.betButton);
+            betButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (betEditText.getText().toString().equals("")) {
+                        Toast.makeText(TableActivity.this, "Please enter a bet amount to start the game", Toast.LENGTH_SHORT).show();
+                    } else {
+                        initializeCardImages();
+                        playerBet = Integer.parseInt(betEditText.getText().toString());
+                        currentBetText.setText("Current Bet: " + playerBet);
+                        player.betChips(playerBet);
+                        playerText.setText(player.toString());
+                        startGame();
+                    }
+
+                    // Buttons
+                    Button hitButton;
+                    Button standButton;
+                    Button doubleDownButton;
+                    Button splitButton;
+
+                    // hitButton Listener
+                    hitButton = findViewById(R.id.hitButton);
+                    hitButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            hit();
+                        }
+                    });
+
+                    // standButton Listener
+                    standButton = findViewById(R.id.standButton);
+                    standButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            stand();
+                        }
+                    });
+
+                    // doubleDownButton Listener
+                    doubleDownButton = findViewById(R.id.doubleDownButton);
+                    doubleDownButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // doubleDown
+                        }
+                    });
+
+                    // check if playerHand is able to split
+                    if (playerHand.get(0).getValue() == playerHand.get(1).getValue()) {
+                        // splitButton Listener
+                        splitButton = findViewById(R.id.splitButton);
+                        splitButton.setEnabled(true);
+                        splitButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // split
+                            }
+                        });
+                    }
+                }
+            });
+        } else {
+            finish();
+            Toast.makeText(TableActivity.this, player.getName() + " ran out of chips.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    /**
+     * initializeCardImages():
+     *  + Initializes all Card ImageViews to default
+     *    which is an image of the back of a card.
+     */
+    public void initializeCardImages() {
+
+        Card cardBack = new Card("card", "back");
+
+        for (int i = 1; i < 5; i++) {
+            updateCardImage(TableActivity.this, cardBack, "R.id.playerCard" + i);
+            updateCardImage(TableActivity.this, cardBack, "R.id.dealerCard" + i);
+        }
     }
 
     /**
      * startGame():
      *  - Called by betButton onClick() method when given
      *    an chip bet amount.
-     *
+
      *  - Initializes deck with buildDeck() and shuffleDeck().
-     *
+
      *  - Clears Text in the betEditText.
-     *
+
      *  - Creates playerHand and dealerHand.
-     *
+
      *  - Draws two initial cards for playerHand and
      *    two initial cards for dealerHand (one hidden).
-     *
+
      *  - If the two drawn cards make BlackJack ([10, jack, queen, king] and Ace),
      *    end the game and display winnings as well as hiddenCard in dealerHand.
-     *
+
      *  - Else, listen for hit(), stand(), doubleDown(), and split().
      */
 
@@ -229,14 +266,19 @@ public class TableActivity extends AppCompatActivity {
                 Toast.makeText(this, "Player Wins by BlackJack, $ +" + playerBet * 3, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet * 3); // sets player's chipCount to 3x the amount of the pot
 
+
             } else if (dealerScore == 21) {
 
                 // Player Loses current bet amount
                 Toast.makeText(this, "Dealer Wins by BlackJack, $ -" + playerBet, Toast.LENGTH_SHORT).show();
 
+
             } else {
+
+                // Player wins his bet back
                 Toast.makeText(this, "Push, $ +" + playerBet, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet);
+
             }
         }
 
@@ -250,7 +292,7 @@ public class TableActivity extends AppCompatActivity {
      *      - Creates the new ArrayList (deck)
      *        and adds each possible combination of Card
      *        objects into it.
-     *
+
      *      - 13 values * 4 suits = 52 Card objects
      */
     public void buildDeck() {
@@ -295,7 +337,7 @@ public class TableActivity extends AppCompatActivity {
      *  updateDealerScore():
      *      - Finds TextView for "Dealer Score:" in .xml file
      *        using the id: dealerScoreText.
-     *
+
      *      - Displays and appends instance variable dealerScore
      *        to the screen in the TextView element.
      */
@@ -308,7 +350,7 @@ public class TableActivity extends AppCompatActivity {
      * updatePlayerScore():
      *  - Finds TextView for "Player Score:" in .xml file
      *    using the id: playerScoreText.
-     *
+
      *  - Displays and appends instance variable playerScore
      *    to the screen in the TextView element.
      */
@@ -320,12 +362,12 @@ public class TableActivity extends AppCompatActivity {
     /**
      * updateCardImage():
      *  - Finds the resource's name based on the resourceId.
-     *
+
      *  - Uses a helper function getResourceId() to return
      *    the ID of the resource.
-     *
+
      *  - Finds the ImageView using android.app
-     *
+
      *  - If the view is not equal to null, set the ImageView.
      *
      *  @param context - TableActivity.this
@@ -353,10 +395,10 @@ public class TableActivity extends AppCompatActivity {
     /**
      * getResourceId():
      *  - Helper function for updateCardImage().
-     *
+
      *  - Using the name of the ImageView's id,
      *    we can try/catch search for the resource.
-     *
+
      *  - If found, return the id at which it was found.
      *
      *  @param context - TableActivity.this
@@ -378,29 +420,31 @@ public class TableActivity extends AppCompatActivity {
     /**
      * stand():
      *  - Called by standButton.onClick()
-     *
+
      *  - Checks if the player busted. If so,
      *    player loses the initial bet.
-     *
+
      *  - If player has bust, dealer draws
      *    Cards until reaches hand score >=17.
-     *
+
      *  - Checks if the dealer busted. If so,
      *    player += bet * 2
-     *
+
      *  - If the player's hand score > dealer's hand score,
      *      + player wins!
      *      + winnings = bet * 2
-     *
+
      *  - If the dealer's hand score > player's hand score,
      *      + dealer wins!
      *      + winnings = -bet
-     *
+
      *  - If the player's hand score == dealer's hand score,
      *      + push!
      *      + winnings = +bet
      */
     public void stand() {
+        Button splitButton = findViewById(R.id.splitButton);
+        splitButton.setEnabled(false);
 
         TextView playerText = findViewById(R.id.playerText);
 
@@ -410,23 +454,32 @@ public class TableActivity extends AppCompatActivity {
 
         // Player Busts
         if (playerScore > 21) {
-            updateDealerScore();
             Toast.makeText(TableActivity.this, "Player Bust $ -" + playerBet, Toast.LENGTH_SHORT).show();
         } else if (playerScore == 21) {
-            updateDealerScore();
             Toast.makeText(TableActivity.this, "Player w/ Lucky 21 $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
             player.setChipCount(playerBet * 2);
             playerText.setText(player.toString());
         } else {
             // Dealer draws until dealerScore <= 17
-            while (dealerScore < 17) {
+            while (dealerScore <= 17) {
                 Card card = deck.remove(deck.size() - 1);
                 dealerHand.add(card);
                 currentDealerCardIndex++; // == 1 -> 2 -> ...
 
                 // Check for multiple Aces
-                if (dealerAceCount > 1 && card.isAce()) {
-                    dealerScore += card.getValue() - 10; // if dealer's hand has more than one Ace and the next Card is an Ace, the Card must be equal to 1
+                if (dealerAceCount == 0 && dealerScore >= 11 && card.isAce()) {
+                    dealerAceCount++;
+                    dealerScore++;
+                    updateDealerScore();
+                } else if (dealerAceCount >= 1 && !card.isAce()) {
+                    dealerScore += card.getValue();
+                    if (dealerScore > 21) {
+                        dealerScore -= 10;
+                        updateDealerScore();
+                    }
+                } else if (dealerAceCount >= 1 && card.isAce()) {
+                    dealerAceCount++;
+                    dealerScore++; // if dealer's hand has more than one Ace and the next Card is an Ace, the Card must be equal to 1
                     updateDealerScore();
                 } else {
                     dealerScore += card.getValue();
@@ -458,16 +511,31 @@ public class TableActivity extends AppCompatActivity {
                     playerText.setText(player.toString());
                 }
             }
+
         }
     }
 
     public void hit() {
+        Button splitButton = findViewById(R.id.splitButton);
+        splitButton.setEnabled(false);
+
         Card card = deck.remove(deck.size() - 1);
         playerHand.add(card);
         currentPlayerCardIndex++;
 
-        if (playerAceCount > 1 && card.isAce()) {
-            playerScore += card.getValue() - 10;
+        if (playerAceCount == 0 && card.isAce() && playerScore >= 11) {
+            playerAceCount++;
+            playerScore++;
+            updatePlayerScore();
+        } else if (playerAceCount >= 1 && !card.isAce()) {
+            playerScore += card.getValue();
+            if (playerScore > 21) {
+                playerScore -= 10;
+            }
+            updatePlayerScore();
+        } else if (playerAceCount >= 1 && card.isAce()) {
+            playerAceCount++;
+            playerScore++;
             updatePlayerScore();
         } else {
             playerScore += card.getValue();
