@@ -1,6 +1,8 @@
 package edu.utsa.cs3443.blackjack2.model;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable {
     private String name;
     private int chipCount;
     public Player(String name, int chipCount) {
@@ -26,6 +28,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player: " + name + ", $ " + chipCount;
+        return name + "," + chipCount;
     }
 }
