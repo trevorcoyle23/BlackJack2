@@ -259,6 +259,12 @@ public class TableActivity extends AppCompatActivity {
             updateCardImage(TableActivity.this, hiddenCard, "R.id.dealerCard2");
             updateDealerScore();
 
+            if (playerScore == 21 && dealerScore == 21) {
+                // Player wins his bet back
+                Toast.makeText(this, "Push, $ +" + playerBet, Toast.LENGTH_SHORT).show();
+                player.setChipCount(playerBet);
+            }
+
             // Player Has BlackJack
             if (playerScore == 21) {
 
@@ -272,12 +278,6 @@ public class TableActivity extends AppCompatActivity {
                 // Player Loses current bet amount
                 Toast.makeText(this, "Dealer Wins by BlackJack, $ -" + playerBet, Toast.LENGTH_SHORT).show();
 
-
-            } else {
-
-                // Player wins his bet back
-                Toast.makeText(this, "Push, $ +" + playerBet, Toast.LENGTH_SHORT).show();
-                player.setChipCount(playerBet);
 
             }
         }
