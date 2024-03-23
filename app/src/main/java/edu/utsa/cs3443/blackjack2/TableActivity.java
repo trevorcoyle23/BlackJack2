@@ -446,6 +446,9 @@ public class TableActivity extends AppCompatActivity {
         Button splitButton = findViewById(R.id.splitButton);
         splitButton.setEnabled(false);
 
+        Button doubleDownButton = findViewById(R.id.doubleDownButton);
+        doubleDownButton.setEnabled(false);
+
         TextView playerText = findViewById(R.id.playerText);
 
         updateCardImage(TableActivity.this, dealerHand.get(1), "R.id.dealerCard2");
@@ -516,9 +519,18 @@ public class TableActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * hit():
+     *  + method for drawing cards to the player's deck
+     *  + different if-else statements to handle each possibility
+     *  + if player at anytime busts or playerScore == 21, call stand();
+     */
     public void hit() {
         Button splitButton = findViewById(R.id.splitButton);
         splitButton.setEnabled(false);
+
+        Button doubleDownButton = findViewById(R.id.doubleDownButton);
+        doubleDownButton.setEnabled(false);
 
         Card card = deck.remove(deck.size() - 1);
         playerHand.add(card);
