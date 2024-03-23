@@ -477,6 +477,7 @@ public class TableActivity extends AppCompatActivity {
                         dealerScore -= 10;
                         updateDealerScore();
                     }
+                    updateDealerScore();
                 } else if (dealerAceCount >= 1 && card.isAce()) {
                     dealerAceCount++;
                     dealerScore++; // if dealer's hand has more than one Ace and the next Card is an Ace, the Card must be equal to 1
