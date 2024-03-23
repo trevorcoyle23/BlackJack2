@@ -112,8 +112,9 @@ public class TableActivity extends AppCompatActivity {
                 } else {
                     playerBet = Integer.parseInt(betEditText.getText().toString());
                     if (playerBet > player.getChipCount()) {
-                        betEditText.setText("");
                         Toast.makeText(TableActivity.this, "Card declined", Toast.LENGTH_SHORT).show();
+                        betEditText.setText("");
+                        return;
                     } else {
                         initializeCardImages();
                         currentBetText.setText("Current Bet: " + playerBet);
