@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,9 +13,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 import edu.utsa.cs3443.blackjack2.model.Card;
 import edu.utsa.cs3443.blackjack2.model.Player;
@@ -50,15 +57,23 @@ public class TableActivity extends AppCompatActivity {
 
         // Get ArrayList of Players
         Intent intent = getIntent();
-        player = new Player(intent.getStringExtra("name"), 0);
-        players = (ArrayList<Player>)intent.getSerializableExtra("players");
+        String name = intent.getStringExtra("name");
 
-        // Find current Player in list
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getName().equals(player.getName())) {
-                player = players.get(i);
+        // Initialize Players and current Player
+        players = new ArrayList<>();
+        player = new Player(name, 1000);
+        initializePlayers();
+
+        if (players.isEmpty()) {
+            players.add(player);
+        } else {
+            for (Player p : players) {
+                if (player.getName().equals(p.getName())) {
+                    player = p;
+                }
             }
         }
+        savePlayers();
 
         // Buttons
         Button betButton;
@@ -87,73 +102,137 @@ public class TableActivity extends AppCompatActivity {
             }
         });
 
-        if (player.getChipCount() > 0) {
-            // betButton Listener
-            betButton = findViewById(R.id.betButton);
-            betButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (betEditText.getText().toString().equals("")) {
-                        Toast.makeText(TableActivity.this, "Please enter a bet amount to start the game", Toast.LENGTH_SHORT).show();
+        // betButton Listener
+        betButton = findViewById(R.id.betButton);
+        betButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (betEditText.getText().toString().equals("")) {
+                    Toast.makeText(TableActivity.this, "Please enter a bet amount to start the game", Toast.LENGTH_SHORT).show();
+                } else {
+                    playerBet = Integer.parseInt(betEditText.getText().toString());
+                    if (playerBet > player.getChipCount()) {
+                        betEditText.setText("");
+                        Toast.makeText(TableActivity.this, "Card declined", Toast.LENGTH_SHORT).show();
                     } else {
                         initializeCardImages();
-                        playerBet = Integer.parseInt(betEditText.getText().toString());
                         currentBetText.setText("Current Bet: " + playerBet);
                         player.betChips(playerBet);
                         playerText.setText(player.toString());
                         startGame();
                     }
-
-                    // Buttons
-                    Button hitButton;
-                    Button standButton;
-                    Button doubleDownButton;
-                    Button splitButton;
-
-                    // hitButton Listener
-                    hitButton = findViewById(R.id.hitButton);
-                    hitButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            hit();
-                        }
-                    });
-
-                    // standButton Listener
-                    standButton = findViewById(R.id.standButton);
-                    standButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            stand();
-                        }
-                    });
-
-                    // doubleDownButton Listener
-                    doubleDownButton = findViewById(R.id.doubleDownButton);
-                    doubleDownButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // doubleDown
-                        }
-                    });
-
-                    // check if playerHand is able to split
-                    if (playerHand.get(0).getValue() == playerHand.get(1).getValue()) {
-                        // splitButton Listener
-                        splitButton = findViewById(R.id.splitButton);
-                        splitButton.setEnabled(true);
-                        splitButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // split
-                            }
-                        });
-                    }
                 }
-            });
-        } else {
-            finish();
-            Toast.makeText(TableActivity.this, player.getName() + " ran out of chips.", Toast.LENGTH_SHORT).show();
+
+                // Buttons
+                Button hitButton;
+                Button standButton;
+                Button doubleDownButton;
+                Button splitButton;
+
+                // hitButton Listener
+                hitButton = findViewById(R.id.hitButton);
+                hitButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        hit();
+                    }
+                });
+
+                // standButton Listener
+                standButton = findViewById(R.id.standButton);
+                standButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        stand();
+                    }
+                });
+
+                // doubleDownButton Listener
+                doubleDownButton = findViewById(R.id.doubleDownButton);
+                doubleDownButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // doubleDown
+                    }
+                });
+
+                // check if playerHand is able to split
+                if (playerHand.get(0).getValue() == playerHand.get(1).getValue()) {
+                    // splitButton Listener
+                    splitButton = findViewById(R.id.splitButton);
+                    splitButton.setEnabled(true);
+                    splitButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // split
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * initializePlayers():
+     *  + Find the players.csv file in the phone's read and writeable memory
+     *  + If the file does not already exist, make it
+     *  + Otherwise, add Player objects to the ArrayList
+     */
+    public void initializePlayers() {
+        try {
+            // try reading from file
+            InputStream in = TableActivity.this.openFileInput("players.csv");
+            loadPlayers(in); // call loadPlayers() with the input stream if successful
+            Log.d("INITIALIZE PLAYERS", "file found");
+        } catch (FileNotFoundException e1) {
+            // try creating the file
+            try {
+                OutputStream out = TableActivity.this.openFileOutput("players.csv", Context.MODE_PRIVATE);
+                Log.d("INITIALIZE PLAYERS", "file created");
+            } catch (FileNotFoundException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * loadPlayers():
+     *  + if initializePlayers() successful attempts to read from the file,
+     *    we call this method that loads the players into the ArrayList<>
+     *    based on the parameter passed (in).
+     * @param in - InputStream from initializePlayers() if successful
+     */
+    public void loadPlayers(InputStream in) {
+        if (in != null) {
+            Scanner scan = new Scanner(in);
+            while (scan.hasNextLine()) {
+                String[] tokens = scan.nextLine().split(",");
+                Player p = new Player(tokens[0], Integer.parseInt(tokens[1]));
+                players.add(p);
+                Log.d("LOAD PLAYERS METHOD", "loaded: " + players);
+            }
+        }
+    }
+
+    /**
+     * savePlayer():
+     *  + Saves the ArrayList<> to a file called "players.csv"
+     *    in the AVD memory
+     *
+     */
+    public void savePlayers() {
+        try {
+            OutputStream out = TableActivity.this.openFileOutput("players.csv", Context.MODE_PRIVATE);
+            if (players != null) {
+                for (Player p : players) {
+                    out.write(p.toString().getBytes(StandardCharsets.UTF_8));
+                    out.write("\n".getBytes(StandardCharsets.UTF_8));
+                    Log.d("SAVE PLAYERS", "saved: " + p);
+                }
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -272,14 +351,13 @@ public class TableActivity extends AppCompatActivity {
                 Toast.makeText(this, "Player Wins by BlackJack, $ +" + playerBet * 3, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet * 3); // sets player's chipCount to 3x the amount of the pot
 
-
             } else if (dealerScore == 21) {
 
                 // Player Loses current bet amount
                 Toast.makeText(this, "Dealer Wins by BlackJack, $ -" + playerBet, Toast.LENGTH_SHORT).show();
 
-
             }
+            savePlayers();
         }
 
         // Update player's chip count
@@ -289,11 +367,11 @@ public class TableActivity extends AppCompatActivity {
 
     /**
      *  buildDeck():
-     *      - Creates the new ArrayList (deck)
+     *      + Creates the new ArrayList (deck)
      *        and adds each possible combination of Card
      *        objects into it.
 
-     *      - 13 values * 4 suits = 52 Card objects
+     *      + 13 values * 4 suits = 52 Card objects
      */
     public void buildDeck() {
         deck = new ArrayList<>();
@@ -310,7 +388,7 @@ public class TableActivity extends AppCompatActivity {
 
     /**
      *   shuffleDeck():
-     *      - Based on the number of cards in a standard
+     *      + Based on the number of cards in a standard
      *        deck of cards (52), randomly swap Card objects
      *        within the deck ArrayList using a Random object
      *        until we reach the last element in the
@@ -335,10 +413,10 @@ public class TableActivity extends AppCompatActivity {
 
     /**
      *  updateDealerScore():
-     *      - Finds TextView for "Dealer Score:" in .xml file
+     *      + Finds TextView for "Dealer Score:" in .xml file
      *        using the id: dealerScoreText.
 
-     *      - Displays and appends instance variable dealerScore
+     *      + Displays and appends instance variable dealerScore
      *        to the screen in the TextView element.
      */
     public void updateDealerScore() {
@@ -348,10 +426,10 @@ public class TableActivity extends AppCompatActivity {
 
     /**
      * updatePlayerScore():
-     *  - Finds TextView for "Player Score:" in .xml file
+     *  + Finds TextView for "Player Score:" in .xml file
      *    using the id: playerScoreText.
 
-     *  - Displays and appends instance variable playerScore
+     *  + Displays and appends instance variable playerScore
      *    to the screen in the TextView element.
      */
     public void updatePlayerScore() {
@@ -361,14 +439,14 @@ public class TableActivity extends AppCompatActivity {
 
     /**
      * updateCardImage():
-     *  - Finds the resource's name based on the resourceId.
+     *  + Finds the resource's name based on the resourceId.
 
-     *  - Uses a helper function getResourceId() to return
+     *  + Uses a helper function getResourceId() to return
      *    the ID of the resource.
 
-     *  - Finds the ImageView using android.app
+     *  + Finds the ImageView using android.app
 
-     *  - If the view is not equal to null, set the ImageView.
+     *  + If the view is not equal to null, set the ImageView.
      *
      *  @param context - TableActivity.this
      *  @param card - Card object we are trying to display
@@ -453,7 +531,7 @@ public class TableActivity extends AppCompatActivity {
 
         updateCardImage(TableActivity.this, dealerHand.get(1), "R.id.dealerCard2");
 
-        updateDealerScore();
+        updateDealerScore(); // second card is revealed
 
         // Player Busts
         if (playerScore > 21) {
@@ -469,26 +547,16 @@ public class TableActivity extends AppCompatActivity {
                 dealerHand.add(card);
                 currentDealerCardIndex++; // == 1 -> 2 -> ...
 
-                // Check for multiple Aces
-                if (dealerAceCount == 0 && dealerScore >= 11 && card.isAce()) {
-                    dealerAceCount++;
-                    dealerScore++;
-                    updateDealerScore();
-                } else if (dealerAceCount >= 1 && !card.isAce()) {
-                    dealerScore += card.getValue();
+                dealerScore += card.getValue();
+                dealerAceCount += card.isAce() ? 1 : 0;
+
+                if (dealerAceCount >= 1) {
                     if (dealerScore > 21) {
                         dealerScore -= 10;
-                        updateDealerScore();
                     }
-                    updateDealerScore();
-                } else if (dealerAceCount >= 1 && card.isAce()) {
-                    dealerAceCount++;
-                    dealerScore++; // if dealer's hand has more than one Ace and the next Card is an Ace, the Card must be equal to 1
-                    updateDealerScore();
-                } else {
-                    dealerScore += card.getValue();
-                    updateDealerScore();
                 }
+
+                updateDealerScore();
 
                 if (currentDealerCardIndex < 5) {
                     updateCardImage(TableActivity.this, card, "R.id.dealerCard" + currentDealerCardIndex);
@@ -517,13 +585,14 @@ public class TableActivity extends AppCompatActivity {
             }
 
         }
+        savePlayers();
     }
 
     /**
      * hit():
-     *  + method for drawing cards to the player's deck
-     *  + different if-else statements to handle each possibility
-     *  + if player at anytime busts or playerScore == 21, call stand();
+     *  - method for drawing cards to the player's deck
+     *  - different if-else statements to handle each possibility
+     *  - if player at anytime busts or playerScore == 21, call stand();
      */
     public void hit() {
         Button splitButton = findViewById(R.id.splitButton);

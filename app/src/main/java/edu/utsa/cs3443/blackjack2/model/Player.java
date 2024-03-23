@@ -1,8 +1,6 @@
 package edu.utsa.cs3443.blackjack2.model;
 
-import java.io.Serializable;
-
-public class Player implements Serializable {
+public class Player {
     private String name;
     private int chipCount;
     public Player(String name, int chipCount) {

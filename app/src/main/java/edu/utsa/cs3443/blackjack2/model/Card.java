@@ -1,5 +1,7 @@
 package edu.utsa.cs3443.blackjack2.model;
 
+
+
 public class Card {
     private String suit;
     private String value;
