@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -210,7 +209,6 @@ public class TableActivity extends AppCompatActivity {
                 String[] tokens = scan.nextLine().split(",");
                 Player p = new Player(tokens[0], Integer.parseInt(tokens[1]));
                 players.add(p);
-                Log.d("LOAD PLAYERS METHOD", "loaded: " + players);
             }
         }
     }
@@ -228,7 +226,6 @@ public class TableActivity extends AppCompatActivity {
                 for (Player p : players) {
                     out.write(p.toString().getBytes(StandardCharsets.UTF_8));
                     out.write("\n".getBytes(StandardCharsets.UTF_8));
-                    Log.d("SAVE PLAYERS", "saved: " + p);
                 }
             }
             out.close();
