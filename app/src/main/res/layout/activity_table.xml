@@ -15,8 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
+        <ImageButton
+            android:contentDescription="Settings"
+            android:id="@+id/settingsButton"
+            android:src="@drawable/default_skin_foreground"
+            android:layout_width="75dp"
+            android:layout_height="75dp" />
+
         <TextView
-            android:drawableLeft="@drawable/default_skin_foreground"
             android:id="@+id/playerText"
             android:text=""
             android:gravity="center"
@@ -148,14 +154,6 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="72dp" />
-            <Button
-                android:id="@+id/splitButton"
-                android:enabled="false"
-                android:textSize="20sp"
-                android:text="Split"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="48dp" />
 
         </LinearLayout>
         <LinearLayout
@@ -196,13 +194,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
-        <EditText
-            android:id="@+id/betEditText"
-            android:layout_margin="16dp"
-            android:layout_weight="1"
-            android:hint="Enter Bet:"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
         <LinearLayout
             android:layout_gravity="center"
             android:weightSum="2"
@@ -218,18 +209,47 @@
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp" />
-            <Button
-                android:id="@+id/betButton"
-                android:text="BET"
-                android:textSize="24sp"
-                android:layout_gravity="center"
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="2"
                 android:layout_weight="1"
-                android:layout_width="128dp"
-                android:layout_height="0dp" />
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <EditText
+                    android:id="@+id/betEditText"
+                    android:textSize="16sp"
+                    android:hint="Enter Chips:"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+                <Button
+                    android:id="@+id/betButton"
+                    android:text="BET"
+                    android:textSize="12sp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp" />
+
+            </LinearLayout>
+
+
         </LinearLayout>
+        <LinearLayout
+            android:padding="16dp"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
 
-
-
+            <Button
+                android:id="@+id/statsButton"
+                android:text="STATS ->"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -59,25 +59,32 @@ public class TableActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
 
-        // Initialize Players and current Player
+        // Initialize Players
         players = new ArrayList<>();
-        player = new Player(name, 1000);
+        player = null;
         initializePlayers();
 
-        if (players.isEmpty()) {
-            players.add(player);
-        } else {
-            for (Player p : players) {
-                if (player.getName().equals(p.getName())) {
-                    player = p;
-                }
+        // Check if player already exists
+
+        for (Player p : players) {
+            if (p.getName().equals(name)) {
+                player = p;
+                break;
             }
         }
-        savePlayers();
+
+        // If the player does not exist; create it
+        if (player == null) {
+            player = new Player(name, 1000);
+            players.add(player);
+            Toast.makeText(this, "+ $1000 SignUp Bonus", Toast.LENGTH_SHORT).show();
+            savePlayers();
+        }
 
         // Buttons
         Button betButton;
         Button exitButton;
+        ImageView settingsImage;
 
         // TextViews
         TextView currentBetText;
@@ -94,11 +101,20 @@ public class TableActivity extends AppCompatActivity {
         betEditText = findViewById(R.id.betEditText);
         currentBetText = findViewById(R.id.currentBetText);
 
+        settingsImage = findViewById(R.id.settingsButton);
+        settingsImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // start SettingsActivity
+            }
+        });
+
         exitButton = findViewById(R.id.exitButton);
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
+                savePlayers();
             }
         });
 
@@ -128,7 +144,6 @@ public class TableActivity extends AppCompatActivity {
                 Button hitButton;
                 Button standButton;
                 Button doubleDownButton;
-                Button splitButton;
 
                 // hitButton Listener
                 hitButton = findViewById(R.id.hitButton);
@@ -153,22 +168,9 @@ public class TableActivity extends AppCompatActivity {
                 doubleDownButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // doubleDown
+                        doubleDown();
                     }
                 });
-
-                // check if playerHand is able to split
-                if (playerHand.get(0).getValue() == playerHand.get(1).getValue()) {
-                    // splitButton Listener
-                    splitButton = findViewById(R.id.splitButton);
-                    splitButton.setEnabled(true);
-                    splitButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // split
-                        }
-                    });
-                }
             }
         });
     }
@@ -184,12 +186,10 @@ public class TableActivity extends AppCompatActivity {
             // try reading from file
             InputStream in = TableActivity.this.openFileInput("players.csv");
             loadPlayers(in); // call loadPlayers() with the input stream if successful
-            Log.d("INITIALIZE PLAYERS", "file found");
         } catch (FileNotFoundException e1) {
-            // try creating the file
             try {
+                // try creating file
                 OutputStream out = TableActivity.this.openFileOutput("players.csv", Context.MODE_PRIVATE);
-                Log.d("INITIALIZE PLAYERS", "file created");
             } catch (FileNotFoundException e2) {
                 e2.printStackTrace();
             }
@@ -281,6 +281,9 @@ public class TableActivity extends AppCompatActivity {
         // Remove Text in betEditText
         EditText editText = findViewById(R.id.betEditText);
         editText.setText("");
+
+        Button doubleDownButton = findViewById(R.id.doubleDownButton);
+        doubleDownButton.setEnabled(true);
 
         // Dealer Initialization
         dealerHand = new ArrayList<>(); // ArrayList<Card> holding all of the dealer's Cards
@@ -379,9 +382,9 @@ public class TableActivity extends AppCompatActivity {
         String[] value = {"ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
         String[] suit = {"diamonds", "clubs", "spades", "hearts"};
 
-        for (int i = 0; i < suit.length; i++) {
-            for (int j = 0; j < value.length; j++) {
-                Card card = new Card(suit[i], value[j]);
+        for (String s : suit) {
+            for (String item : value) {
+                Card card = new Card(s, item);
                 deck.add(card);
             }
         }
@@ -522,8 +525,6 @@ public class TableActivity extends AppCompatActivity {
      *      + winnings = +bet
      */
     public void stand() {
-        Button splitButton = findViewById(R.id.splitButton);
-        splitButton.setEnabled(false);
 
         Button doubleDownButton = findViewById(R.id.doubleDownButton);
         doubleDownButton.setEnabled(false);
@@ -596,8 +597,6 @@ public class TableActivity extends AppCompatActivity {
      *  - if player at anytime busts or playerScore == 21, call stand();
      */
     public void hit() {
-        Button splitButton = findViewById(R.id.splitButton);
-        splitButton.setEnabled(false);
 
         Button doubleDownButton = findViewById(R.id.doubleDownButton);
         doubleDownButton.setEnabled(false);
@@ -606,24 +605,13 @@ public class TableActivity extends AppCompatActivity {
         playerHand.add(card);
         currentPlayerCardIndex++;
 
-        if (playerAceCount == 0 && card.isAce() && playerScore >= 11) {
-            playerAceCount++;
-            playerScore++;
-            updatePlayerScore();
-        } else if (playerAceCount >= 1 && !card.isAce()) {
-            playerScore += card.getValue();
-            if (playerScore > 21) {
-                playerScore -= 10;
-            }
-            updatePlayerScore();
-        } else if (playerAceCount >= 1 && card.isAce()) {
-            playerAceCount++;
-            playerScore++;
-            updatePlayerScore();
-        } else {
-            playerScore += card.getValue();
-            updatePlayerScore();
+        playerScore += card.getValue();
+        playerAceCount += card.isAce() ? 1 : 0;
+
+        if (playerScore > 21 && playerAceCount >= 1) {
+            playerScore -= 10;
         }
+        updatePlayerScore();
 
         // if player hits more than the amount of cards on the table, user playerCard5 ? idk :)
         if (currentPlayerCardIndex < 5) {
@@ -641,5 +629,24 @@ public class TableActivity extends AppCompatActivity {
         if (playerScore == 21) {
             stand();
         }
+    }
+
+    /**
+     * doubleDown():
+     *  - double's the initial bet and draws only one card to player's hand
+     */
+    public void doubleDown() {
+        // bet 2x chips
+        player.betChips(playerBet);
+        playerBet *= 2;
+
+        // TextViews
+        TextView currentBetText = findViewById(R.id.currentBetText);
+        currentBetText.setText("Current Bet: " + playerBet);
+        TextView playerText = findViewById(R.id.playerText);
+        playerText.setText(player.toString());
+
+        hit();
+        stand();
     }
 }
