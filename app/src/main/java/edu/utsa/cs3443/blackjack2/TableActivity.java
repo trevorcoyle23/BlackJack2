@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,7 +84,7 @@ public class TableActivity extends AppCompatActivity {
         // Buttons
         Button betButton;
         Button exitButton;
-        ImageView settingsImage;
+        ImageButton settingsImage;
 
         // TextViews
         TextView currentBetText;
@@ -101,6 +102,7 @@ public class TableActivity extends AppCompatActivity {
         currentBetText = findViewById(R.id.currentBetText);
 
         settingsImage = findViewById(R.id.settingsButton);
+        settingsImage.setEnabled(true);
         settingsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -271,6 +273,10 @@ public class TableActivity extends AppCompatActivity {
      */
 
     public void startGame() {
+        // Player cannot change settings once game starts
+        ImageButton settingsImage = findViewById(R.id.settingsButton);
+        settingsImage.setEnabled(false);
+
         // Initialize Game
         buildDeck(); // deck = 52 cards
         shuffleDeck(); // randomize deck
@@ -541,16 +547,16 @@ public class TableActivity extends AppCompatActivity {
             playerText.setText(player.toString());
         } else {
             // Dealer draws until dealerScore <= 17
-            while (dealerScore <= 17) {
+            while (dealerScore < 17) {
                 Card card = deck.remove(deck.size() - 1);
                 dealerHand.add(card);
                 currentDealerCardIndex++; // == 1 -> 2 -> ...
 
                 dealerScore += card.getValue();
-                dealerAceCount += card.isAce() ? 1 : 0;
 
-                if (dealerAceCount >= 1) {
-                    if (dealerScore > 21) {
+                if (card.isAce()) {
+                    dealerAceCount++;
+                    if (dealerAceCount > 1) {
                         dealerScore -= 10;
                     }
                 }
@@ -603,11 +609,14 @@ public class TableActivity extends AppCompatActivity {
         currentPlayerCardIndex++;
 
         playerScore += card.getValue();
-        playerAceCount += card.isAce() ? 1 : 0;
 
-        if (playerScore > 21 && playerAceCount >= 1) {
-            playerScore -= 10;
+        if (card.isAce()) {
+            playerAceCount++;
+            if (playerAceCount > 1) {
+                playerScore -= 10;
+            }
         }
+
         updatePlayerScore();
 
         // if player hits more than the amount of cards on the table, user playerCard5 ? idk :)
