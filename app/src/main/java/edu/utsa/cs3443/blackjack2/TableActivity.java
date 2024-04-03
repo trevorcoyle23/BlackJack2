@@ -314,6 +314,7 @@ public class TableActivity extends AppCompatActivity {
             updatePlayerScore(); // display amount
 
             playerAceCount += card.isAce() ? 1 : 0; // add 1 if Card is an Ace (player)
+            if (playerAceCount > 1) { playerScore -= 10; } // check if both player's Cards are aces
 
             updateCardImage(TableActivity.this, card, "R.id.playerCard" + i); // update ImageView to corresponding Card
         }
@@ -327,6 +328,7 @@ public class TableActivity extends AppCompatActivity {
         updateDealerScore(); // display amount
 
         dealerAceCount += shownCard.isAce() ? 1 : 0; // add 1 if Card is an Ace (dealer)
+        if (dealerAceCount > 1) { dealerScore -= 10; }
 
         updateCardImage(TableActivity.this, shownCard, "R.id.dealerCard1"); // update ImageView to corresponding Card
 
@@ -553,14 +555,14 @@ public class TableActivity extends AppCompatActivity {
                 currentDealerCardIndex++; // == 1 -> 2 -> ...
 
                 dealerScore += card.getValue();
+                dealerAceCount += card.isAce() ? 1 : 0;
 
-                if (card.isAce()) {
-                    dealerAceCount++;
-                    if (dealerAceCount > 1) {
+                if (dealerScore > 21) {
+                    if (dealerAceCount >= 1) {
                         dealerScore -= 10;
+                        dealerAceCount--;
                     }
                 }
-
                 updateDealerScore();
 
                 if (currentDealerCardIndex < 5) {
@@ -607,16 +609,15 @@ public class TableActivity extends AppCompatActivity {
         Card card = deck.remove(deck.size() - 1);
         playerHand.add(card);
         currentPlayerCardIndex++;
-
+        playerAceCount += card.isAce() ? 1 : 0;
         playerScore += card.getValue();
 
-        if (card.isAce()) {
-            playerAceCount++;
-            if (playerAceCount > 1) {
+        if (playerScore > 21) {
+            if (playerAceCount >= 1) {
                 playerScore -= 10;
+                playerAceCount--;
             }
         }
-
         updatePlayerScore();
 
         // if player hits more than the amount of cards on the table, user playerCard5 ? idk :)
