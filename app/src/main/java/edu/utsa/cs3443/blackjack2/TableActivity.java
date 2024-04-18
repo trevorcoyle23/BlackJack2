@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,16 +26,22 @@ import edu.utsa.cs3443.blackjack2.model.Card;
 import edu.utsa.cs3443.blackjack2.model.Player;
 
 public class TableActivity extends AppCompatActivity {
+    // Table
     private ArrayList<Player> players;
     private Player player;
     private ArrayList<Card> deck;
     private ArrayList<Card> dealerHand;
     private ArrayList<Card> playerHand;
     private int dealerScore, dealerAceCount, currentDealerCardIndex;
-
     private int playerScore, playerAceCount, currentPlayerCardIndex;
     private int playerBet;
 
+    // Settings
+    private int blackJack;
+    private int standTarget;
+
+    // Stats
+    private int numBlackJacks, numGames, numWins, numLosses, numDraws, topWin, worstLoss;
 
     /**
      * onCreate():
@@ -55,9 +60,15 @@ public class TableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table);
 
-        // Get ArrayList of Players
+        // Get ArrayList of Players and Settings rules
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
+        blackJack = intent.getIntExtra("blackjack", 21);
+        standTarget = intent.getIntExtra("stand", 17);
+
+        // Initialize Stats
+        initializeStats();
+        saveStats();
 
         // Initialize Players
         players = new ArrayList<>();
@@ -65,7 +76,6 @@ public class TableActivity extends AppCompatActivity {
         initializePlayers();
 
         // Check if player already exists
-
         for (Player p : players) {
             if (p.getName().equals(name)) {
                 player = p;
@@ -84,7 +94,7 @@ public class TableActivity extends AppCompatActivity {
         // Buttons
         Button betButton;
         Button exitButton;
-        ImageButton settingsImage;
+        Button statsButton;
 
         // TextViews
         TextView currentBetText;
@@ -101,21 +111,22 @@ public class TableActivity extends AppCompatActivity {
         betEditText = findViewById(R.id.betEditText);
         currentBetText = findViewById(R.id.currentBetText);
 
-        settingsImage = findViewById(R.id.settingsButton);
-        settingsImage.setEnabled(true);
-        settingsImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // start SettingsActivity
-            }
-        });
-
         exitButton = findViewById(R.id.exitButton);
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                Intent intent = new Intent(TableActivity.this, MainActivity.class);
+                startActivity(intent);
                 savePlayers();
+            }
+        });
+
+        statsButton = findViewById(R.id.statsButton);
+        statsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TableActivity.this, StatsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -197,6 +208,21 @@ public class TableActivity extends AppCompatActivity {
         }
     }
 
+    public void initializeStats() {
+        try {
+            // try reading from file
+            InputStream in = TableActivity.this.openFileInput("stats.csv");
+            loadStats(in); // call loadStats() with the input stream if successful
+        } catch (FileNotFoundException e1) {
+            try {
+                // try creating file
+                OutputStream out = TableActivity.this.openFileOutput("stats.csv", Context.MODE_PRIVATE);
+            } catch (FileNotFoundException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
     /**
      * loadPlayers():
      *  + if initializePlayers() successful attempts to read from the file,
@@ -215,6 +241,30 @@ public class TableActivity extends AppCompatActivity {
         }
     }
 
+    public void loadStats(InputStream in) {
+        if (in != null) {
+            Scanner scan = new Scanner(in);
+            if (scan.hasNextLine()) {
+                String[] tokens = scan.nextLine().split(",");
+                numBlackJacks = Integer.parseInt(tokens[0]);
+                numGames = Integer.parseInt(tokens[1]);
+                numWins = Integer.parseInt(tokens[2]);
+                numLosses = Integer.parseInt(tokens[3]);
+                numDraws = Integer.parseInt(tokens[4]);
+                topWin = Integer.parseInt(tokens[5]);
+                worstLoss = Integer.parseInt(tokens[6]);
+            }
+        } else {
+            numBlackJacks = 0;
+            numGames = 0;
+            numWins = 0;
+            numLosses = 0;
+            numDraws = 0;
+            topWin = 0;
+            worstLoss = 0;
+        }
+    }
+
     /**
      * savePlayer():
      *  + Saves the ArrayList<> to a file called "players.csv"
@@ -226,10 +276,20 @@ public class TableActivity extends AppCompatActivity {
             OutputStream out = TableActivity.this.openFileOutput("players.csv", Context.MODE_PRIVATE);
             if (players != null) {
                 for (Player p : players) {
-                    out.write(p.toString().getBytes(StandardCharsets.UTF_8));
+                    out.write(p.save().getBytes(StandardCharsets.UTF_8));
                     out.write("\n".getBytes(StandardCharsets.UTF_8));
                 }
             }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveStats() {
+        try {
+            OutputStream out = TableActivity.this.openFileOutput("stats.csv", Context.MODE_PRIVATE);
+            out.write((numBlackJacks + "," + numGames + "," + numWins + "," + numLosses + "," + numDraws + "," + topWin + "," + worstLoss).getBytes(StandardCharsets.UTF_8));
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -273,9 +333,10 @@ public class TableActivity extends AppCompatActivity {
      */
 
     public void startGame() {
-        // Player cannot change settings once game starts
-        ImageButton settingsImage = findViewById(R.id.settingsButton);
-        settingsImage.setEnabled(false);
+        numGames++;
+
+        Button statsButton = findViewById(R.id.statsButton);
+        statsButton.setEnabled(false);
 
         // Initialize Game
         buildDeck(); // deck = 52 cards
@@ -343,35 +404,44 @@ public class TableActivity extends AppCompatActivity {
         dealerAceCount += hiddenCard.isAce() ? 1 : 0; // add 1 if Card is an Ace (dealer)
 
         // Check if dealer or player has BlackJack w/ initial 2 Cards
-        if (playerScore == 21 || dealerScore == 21) {
+        if (playerScore == blackJack || dealerScore == blackJack) {
             updateCardImage(TableActivity.this, hiddenCard, "R.id.dealerCard2");
             updateDealerScore();
 
-            if (playerScore == 21 && dealerScore == 21) {
+            if (playerScore == blackJack && dealerScore == blackJack) {
                 // Player wins his bet back
                 Toast.makeText(this, "Push, $ +" + playerBet, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet);
+                numBlackJacks += 2;
+                numDraws++;
             }
 
             // Player Has BlackJack
-            if (playerScore == 21) {
+            if (playerScore == blackJack) {
 
                 // Dealer pays 3x current bet amount
                 Toast.makeText(this, "Player Wins by BlackJack, $ +" + playerBet * 3, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet * 3); // sets player's chipCount to 3x the amount of the pot
+                numBlackJacks++;
+                numWins++;
+                if ((playerBet * 3) > topWin) { topWin = playerBet * 3; }
 
-            } else if (dealerScore == 21) {
+            } else if (dealerScore == blackJack) {
 
                 // Player Loses current bet amount
                 Toast.makeText(this, "Dealer Wins by BlackJack, $ -" + playerBet, Toast.LENGTH_SHORT).show();
-
+                numBlackJacks++;
+                numLosses++;
+                if (playerBet > worstLoss) { worstLoss = playerBet; }
             }
             savePlayers();
+            saveStats();
         }
 
         // Update player's chip count
         TextView playerText = findViewById(R.id.playerText);
         playerText.setText(player.toString());
+        statsButton.setEnabled(true);
     }
 
     /**
@@ -541,15 +611,19 @@ public class TableActivity extends AppCompatActivity {
         updateDealerScore(); // second card is revealed
 
         // Player Busts
-        if (playerScore > 21) {
+        if (playerScore > blackJack) {
             Toast.makeText(TableActivity.this, "Player Bust $ -" + playerBet, Toast.LENGTH_SHORT).show();
-        } else if (playerScore == 21) {
-            Toast.makeText(TableActivity.this, "Player w/ Lucky 21 $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
+            numLosses++;
+            if (playerBet > worstLoss) { worstLoss = playerBet; }
+        } else if (playerScore == blackJack) {
+            Toast.makeText(TableActivity.this, "Player w/ Lucky " + blackJack + " $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
             player.setChipCount(playerBet * 2);
             playerText.setText(player.toString());
+            numWins++;
+            if ((playerBet * 2) > topWin) { topWin = playerBet * 2; }
         } else {
             // Dealer draws until dealerScore <= 17
-            while (dealerScore < 17) {
+            while (dealerScore < standTarget) {
                 Card card = deck.remove(deck.size() - 1);
                 dealerHand.add(card);
                 currentDealerCardIndex++; // == 1 -> 2 -> ...
@@ -557,7 +631,7 @@ public class TableActivity extends AppCompatActivity {
                 dealerScore += card.getValue();
                 dealerAceCount += card.isAce() ? 1 : 0;
 
-                if (dealerScore > 21) {
+                if (dealerScore > blackJack) {
                     if (dealerAceCount >= 1) {
                         dealerScore -= 10;
                         dealerAceCount--;
@@ -573,26 +647,34 @@ public class TableActivity extends AppCompatActivity {
             }
 
             // Dealer Busts
-            if (dealerScore > 21) {
+            if (dealerScore > blackJack) {
                 Toast.makeText(TableActivity.this, "Dealer Bust $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
                 player.setChipCount(playerBet * 2);
                 playerText.setText(player.toString());
+                numWins++;
+                if ((playerBet * 2) > topWin) { topWin = playerBet * 2; }
             } else {
                 if (dealerScore > playerScore) {
                     Toast.makeText(TableActivity.this, "Dealer wins w/ " + dealerScore + ", $ -" + playerBet, Toast.LENGTH_SHORT).show();
+                    numLosses++;
+                    if (playerBet > worstLoss) { worstLoss = playerBet; }
                 } else if (playerScore > dealerScore) {
                     Toast.makeText(TableActivity.this, "Player wins w/ " + playerScore + ", $ +" + playerBet * 2, Toast.LENGTH_SHORT).show();
                     player.setChipCount(playerBet * 2);
                     playerText.setText(player.toString());
+                    numWins++;
+                    if ((playerBet * 2) > topWin) { topWin = playerBet * 2; }
                 } else {
                     Toast.makeText(TableActivity.this, "Push, $ +" + playerBet, Toast.LENGTH_SHORT).show();
                     player.setChipCount(playerBet);
                     playerText.setText(player.toString());
+                    numDraws++;
                 }
             }
 
         }
         savePlayers();
+        saveStats();
     }
 
     /**
@@ -612,7 +694,7 @@ public class TableActivity extends AppCompatActivity {
         playerAceCount += card.isAce() ? 1 : 0;
         playerScore += card.getValue();
 
-        if (playerScore > 21) {
+        if (playerScore > blackJack) {
             if (playerAceCount >= 1) {
                 playerScore -= 10;
                 playerAceCount--;
@@ -628,12 +710,12 @@ public class TableActivity extends AppCompatActivity {
         }
 
         // Player bust
-        if (playerScore > 21) {
+        if (playerScore > blackJack) {
             stand();
         }
 
         // Player gets lucky
-        if (playerScore == 21) {
+        if (playerScore == blackJack) {
             stand();
         }
     }

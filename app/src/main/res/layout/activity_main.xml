@@ -21,33 +21,18 @@
     <LinearLayout
         android:layout_weight="1"
         android:orientation="vertical"
-        android:weightSum="1.75"
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="64dp"
-            android:layout_weight="1"
-            android:background="#FCF2C6"
-            android:hint="Enter name"
-            android:paddingStart="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="#000000" />
-
         <Button
-            android:id="@+id/enterButton"
-            android:layout_width="128dp"
-            android:layout_height="1dp"
-            android:layout_gravity="right"
-            android:layout_margin="64dp"
-            android:layout_weight=".75"
+            android:id="@+id/playButton"
+            android:text="PLAY"
+            android:textSize="32sp"
             android:backgroundTint="#C22A19"
-            android:fontFamily="sans-serif-medium"
-            android:text="ENTER"
-            app:iconPadding="8dp" />
+            android:layout_weight="1"
+            android:layout_margin="132dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"/>
     </LinearLayout>
 
 

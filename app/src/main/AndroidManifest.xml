@@ -13,6 +13,12 @@
         android:theme="@style/Theme.BlackJack2"
         tools:targetApi="26">
         <activity
+            android:name=".StatsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".TableActivity"
             android:exported="false" />
         <activity

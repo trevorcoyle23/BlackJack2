@@ -26,6 +26,10 @@ public class Player {
 
     @Override
     public String toString() {
+        return name + "\nChips: " + chipCount;
+    }
+
+    public String save() {
         return name + "," + chipCount;
     }
 }
