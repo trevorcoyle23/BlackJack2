@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@drawable/menu_background"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    tools:context=".SettingsActivity">
+
+    <TextView
+        android:textColor="#000000"
+        android:background="#FCF2C6"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Settings"
+        android:textSize="32sp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <LinearLayout
+        android:background="#FCF2C6"
+        android:orientation="vertical"
+        android:layout_margin="32dp"
+        android:layout_weight="4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:layout_weight="1"
+                android:text="BlackJack Target: "
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+            <EditText
+                android:inputType="number"
+                android:layout_marginVertical="81dp"
+                android:hint="21"
+                android:id="@+id/bjTargetEditText"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:layout_weight="1"
+                android:text="Dealer Stands on: "
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+            <EditText
+                android:hint="17"
+                android:inputType="number"
+                android:layout_marginVertical="81dp"
+                android:id="@+id/standEditText"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_weight="1"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <EditText
+            android:id="@+id/nameEditText"
+            android:hint="Enter name:"
+            android:inputType="text"
+            android:paddingStart="8dp"
+            android:layout_margin="28dp"
+            android:background="#FCF2C6"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:backgroundTint="#C22A19"
+            android:id="@+id/enterButton"
+            android:layout_margin="20dp"
+            android:text="ENTER"
+            android:textSize="32sp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+        
+    </LinearLayout>
+
+</LinearLayout>

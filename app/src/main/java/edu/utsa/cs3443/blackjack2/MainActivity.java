@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,22 +15,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button enterButton = findViewById(R.id.enterButton);
-        EditText editText = findViewById(R.id.editText);
-
-        enterButton.setOnClickListener(new View.OnClickListener() {
+        Button playButton = findViewById(R.id.playButton);
+        playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (editText.getText().toString().equals("")) {
-                    Toast.makeText(MainActivity.this, "Please enter a name", Toast.LENGTH_SHORT).show();
-                } else {
-                    String name = editText.getText().toString();
-                    Intent intent = new Intent(MainActivity.this, TableActivity.class);
-                    intent.putExtra("name", name);
-                    Toast.makeText(MainActivity.this, "Welcome " + name, Toast.LENGTH_SHORT).show();
-                    startActivity(intent);
-                    editText.setText("");
-                }
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
     }
