@@ -129,30 +129,33 @@
 
 
             <Button
+                android:layout_margin="8dp"
                 android:backgroundTint="#BC2518"
                 android:id="@+id/hitButton"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:text="Hit"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="48dp" />
             <Button
+                android:layout_margin="8dp"
                 android:backgroundTint="#BC2518"
                 android:id="@+id/standButton"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:text="Stand"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="48dp" />
 
             <Button
+                android:layout_margin="8dp"
                 android:id="@+id/doubleDownButton"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="2"
                 android:backgroundTint="#BC2518"
                 android:text="Double Down"
-                android:textSize="20sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
         <LinearLayout

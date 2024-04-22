@@ -393,10 +393,10 @@ public class TableActivity extends AppCompatActivity {
             currentPlayerCardIndex++; // increment 1 Card index (player) == 1 -> 2
 
             playerScore += card.getValue(); // add card's value to player's score
-            updatePlayerScore(); // display amount
 
             playerAceCount += card.isAce() ? 1 : 0; // add 1 if Card is an Ace (player)
             if (playerAceCount > 1) { playerScore -= 10; } // check if both player's Cards are aces
+            updatePlayerScore(); // display amount
 
             updateCardImage(TableActivity.this, card, "R.id.playerCard" + i); // update ImageView to corresponding Card
         }
