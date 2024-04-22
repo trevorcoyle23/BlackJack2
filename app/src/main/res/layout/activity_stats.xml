@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:background="@drawable/menu_background"
+    android:background="@drawable/activity_stats_background"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,18 +11,15 @@
     tools:context=".StatsActivity">
 
     <TextView
-        android:layout_weight="1"
-        android:text="Stats"
+        android:layout_weight="1.5"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textSize="32sp"
-        android:textColor="#000000"
-        android:background="#FCF2C6"
         android:layout_width="match_parent"
         android:layout_height="0dp"/>
+
     <LinearLayout
         android:orientation="vertical"
-        android:layout_weight="7"
+        android:layout_weight="6"
         android:weightSum="7"
         android:layout_margin="16dp"
         android:background="#FCF2C6"

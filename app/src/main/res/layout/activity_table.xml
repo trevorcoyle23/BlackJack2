@@ -26,13 +26,13 @@
             android:layout_height="match_parent" />
 
         <Button
-            android:backgroundTint="#C22A19"
-            android:layout_gravity="center"
-            android:text="EXIT"
             android:id="@+id/exitButton"
-            android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="64dp" />
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:backgroundTint="#1C5041"
+            android:text="EXIT" />
     </LinearLayout>
 
     <LinearLayout
@@ -131,7 +131,7 @@
             <Button
                 android:backgroundTint="#C22A19"
                 android:id="@+id/hitButton"
-                android:textSize="22sp"
+                android:textSize="16sp"
                 android:text="Hit"
                 android:layout_weight="1"
                 android:layout_width="0dp"
@@ -144,14 +144,15 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="48dp" />
+
             <Button
-                android:backgroundTint="#C22A19"
                 android:id="@+id/doubleDownButton"
-                android:textSize="16sp"
-                android:text="Double Down"
-                android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="72dp" />
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:backgroundTint="#C22A19"
+                android:text="Double Down"
+                android:textSize="9.3sp" />
 
         </LinearLayout>
         <LinearLayout
@@ -222,15 +223,16 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
+
                 <Button
-                    android:backgroundTint="#C22A19"
                     android:id="@+id/betButton"
-                    android:text="BET"
-                    android:textSize="12sp"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp" />
+                    android:backgroundTint="#177057"
+                    android:text="BET"
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -245,12 +247,12 @@
             android:layout_height="match_parent">
 
             <Button
-                android:backgroundTint="#C22A19"
                 android:id="@+id/statsButton"
-                android:text="STATS ->"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:backgroundTint="#177057"
+                android:text="STATS ->" />
         </LinearLayout>
     </LinearLayout>
 
