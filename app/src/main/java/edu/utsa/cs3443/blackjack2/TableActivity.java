@@ -208,6 +208,13 @@ public class TableActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * initializeStats():
+     *  + Try finding the file "stats.csv" in the emulator's
+     *    AVD memory that holds all the stats collected.
+     *  + If it exists, call `loadStats()`.
+     *  + If it fails, error
+     */
     public void initializeStats() {
         try {
             // try reading from file
@@ -241,6 +248,13 @@ public class TableActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * loadStats():
+     *  + if initializeStats() successfully attempts to read from the file,
+     *    we call this method that loads the stats into their corresponding
+     *    instance variables based on the parameter passed (in).
+     * @param in - InputStream from initializeStats() if successful
+     */
     public void loadStats(InputStream in) {
         if (in != null) {
             Scanner scan = new Scanner(in);
@@ -286,6 +300,13 @@ public class TableActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * saveStats():
+     *  + Try to open "stats.csv" if it exists.
+     *  + If it does exist, open the file and write the updated
+     *    stats to the file.
+     *  + If it does NOT exist, we create the file and write to it.
+     */
     public void saveStats() {
         try {
             OutputStream out = TableActivity.this.openFileOutput("stats.csv", Context.MODE_PRIVATE);

@@ -31,7 +31,7 @@
             android:layout_height="64dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:backgroundTint="#1C5041"
+            android:backgroundTint="#BC2518"
             android:text="EXIT" />
     </LinearLayout>
 
@@ -129,17 +129,17 @@
 
 
             <Button
-                android:backgroundTint="#C22A19"
+                android:backgroundTint="#BC2518"
                 android:id="@+id/hitButton"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:text="Hit"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="48dp" />
             <Button
-                android:backgroundTint="#C22A19"
+                android:backgroundTint="#BC2518"
                 android:id="@+id/standButton"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:text="Stand"
                 android:layout_weight="1"
                 android:layout_width="0dp"
@@ -148,11 +148,11 @@
             <Button
                 android:id="@+id/doubleDownButton"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:backgroundTint="#C22A19"
+                android:layout_height="48dp"
+                android:layout_weight="2"
+                android:backgroundTint="#BC2518"
                 android:text="Double Down"
-                android:textSize="9.3sp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
         <LinearLayout
@@ -230,7 +230,7 @@
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:backgroundTint="#177057"
+                    android:backgroundTint="#BC2518"
                     android:text="BET"
                     android:textSize="12sp" />
 
@@ -251,7 +251,7 @@
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
-                android:backgroundTint="#177057"
+                android:backgroundTint="#BC2518"
                 android:text="STATS ->" />
         </LinearLayout>
     </LinearLayout>

@@ -101,7 +101,7 @@
             android:layout_height="match_parent"
             android:layout_margin="20dp"
             android:layout_weight="1"
-            android:backgroundTint="#177057"
+            android:backgroundTint="#BC2518"
             android:text="ENTER"
             android:textSize="32sp" />
         
