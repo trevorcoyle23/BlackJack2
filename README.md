@@ -16,18 +16,20 @@ Billy's BlackJack is the ultimate blackjack simulation app. Our app provides a d
 
 | Name         | GitHub Profile(s)                                                                                         |
 | ------------ |:---------------------------------------------------------------------------------------------------------:|
-| Trevor Coyle | [GitHub Account 1](https://github.com/trevorcoyle23), [GitHub Account 2](https://github.com/yourlocalplug)|
-| Eric Kim     | [GitHub Account](https://github.com/bitFlyp)                                                              |
-| Trace Harris | [GitHub Account](https://github.com/Trace-Harris)                                                         |
+| Trevor Coyle | [Trevor Coyle](https://github.com/trevorcoyle23), [Trevor Coyle](https://github.com/yourlocalplug)|
+| Eric Kim     | [Eric Kim](https://github.com/bitFlyp)                                                              |
+| Trace Harris | [Trace Harris](https://github.com/Trace-Harris)                                                         |
 
 ---
 **How to Play**
 
 [comment]: <> (Clear instructions for running your application, including any special files or requirements such as internet access)
 
+In order to play, you will need the latest version of Android Studio with a Java SDK of at least 17 and an android emulator, or physical device with an API level of at least 24.
+
 Watch the game demo on YouTube:
 
-[![IMAGE ALT TEXT HERE](https://i.ytimg.com/an_webp/29graYUqFBI/mqdefault_6s.webp?du=3000&sqp=CKTsm7EG&rs=AOn4CLDyrO0DWeBjR8pUp47PD4-5TPnAIQ)](https://www.youtube.com/watch?v=29graYUqFBI&t=174s)
+[![DEMO VIDEO](https://i.ytimg.com/an_webp/29graYUqFBI/mqdefault_6s.webp?du=3000&sqp=CKTsm7EG&rs=AOn4CLDyrO0DWeBjR8pUp47PD4-5TPnAIQ)](https://www.youtube.com/watch?v=29graYUqFBI&t=174s)
 
 ---
 **Known Issues**
