@@ -26,6 +26,7 @@ Billy's BlackJack is the ultimate blackjack simulation app. Our app provides a d
 [comment]: <> (Clear instructions for running your application, including any special files or requirements such as internet access)
 
 In order to play, you will need the latest version of Android Studio with a Java SDK of at least 17 and an android emulator, or physical device with an API level of at least 24.
+Download the .zip, submit a pull request, or clone the repository in your Android Studio projects folder and run the app in Android Studio.
 
 Watch the game demo on YouTube:
 
