@@ -36,3 +36,5 @@ Watch the game demo on YouTube:
 **Known Issues**
 
 [comment]: <> (A section detailing any known issues.)
+
+There are no known issues as of November 2024
